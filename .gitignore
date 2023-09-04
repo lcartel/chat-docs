@@ -151,4 +151,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-documentations/uploads/companies/*
+documentations/uploads/embeddings/companies/*
+documentations/uploads/source_pdf/companies/*
+*.pickle

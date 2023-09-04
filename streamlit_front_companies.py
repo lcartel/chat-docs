@@ -11,21 +11,20 @@ import logging
 
 USE_BARD_AUTOCOMPLETE=False
 ENABLE_DEBUG=True
-PATH_DOCUMENTATION="./documentations/uploads/companies"
+PATH_DOCUMENTATION="./documentations/uploads/source_pdf/companies"
 
 # Sidebar contents
 with st.sidebar:
-    st.title('🤗💬 LLM Chat App')
+    st.title('👨‍💻💬 LLM Chat Doc - Entreprise')
     st.markdown('''
     ## About
-    This app is an LLM-powered chatbot built using:
-    - [Streamlit](https://streamlit.io/)
-    - [LangChain](https://python.langchain.com/)
-    - [OpenAI](https://platform.openai.com/docs/models) LLM model
- 
+    This app allow you to turn your PDF files into a ready to use chatbot for your customers!
+    To get started : 
+    1. Upload your pdf file of choice
+    2. Fill your *Company* name and the name of your *Product (Model)*
+    3. Click *Save*
     ''')
     add_vertical_space(5)
-    st.write('Made with ❤️ by [Leo Cartel](https://github.com/lcartel)')
 
 def get_hello_world(file):
     return st.write("hello")
@@ -125,8 +124,6 @@ def main():
                         st.success('Your file has been saved !', icon="✅")
                 else:
                     st.warning('Please complete all tags', icon="⚠️")
-
-
 
 if __name__ == '__main__':
     main()
