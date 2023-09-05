@@ -6,7 +6,6 @@ import os
 import requests
 from bardapi import Bard, SESSION_HEADERS
 import json 
-from dotenv import load_dotenv, find_dotenv
 import logging
 
 USE_BARD_AUTOCOMPLETE=False
@@ -25,9 +24,6 @@ with st.sidebar:
     3. Click *Save*
     ''')
     add_vertical_space(5)
-
-def get_hello_world(file):
-    return st.write("hello")
 
 def load_bard_credentials():
     session = requests.Session()
