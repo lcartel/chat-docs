@@ -3,7 +3,9 @@
   <br /><br /><strong>CHAT DOC</strong>
 </h1>
 
-The purpose of this tool is to privde
+The platform offer double benefits:
+- On the entreprise side: It allows any companies to upload their pdf and tag them to put it available to their customer in the chatbot.
+- On the client side: It allows clients to ask questions about their favorite products without spending further time in the documentation.
 
 The following tools have been used:
 - [Open AI API](https://platform.openai.com/docs/api-reference)
@@ -50,7 +52,7 @@ $> streamlit run src/[youfile]/main.py --logger.level debug
 
 ## Run locally VS Code (Debug mode)
 A *launch.json* file is already present in the repository. 
-You should be able to run and debug any file from 
+You should be able to run and debug any file from their main.py by pressing F5 on your keyboard.
 
 
 ## Screenshots
