@@ -17,7 +17,9 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.callbacks import get_openai_callback
 import pathlib
 import logging, sys
+import traceback
 
+openai.api_key  = os.getenv('OPENAI_API_KEY')
 
 PATH_DOCUMENTATIONS = "./documentations/examples/source_pdf/companies"
 PATH_EMBEDDINGS = "./documentations/examples/embeddings/companies"
@@ -43,7 +45,6 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 def return_request_info(user_prompt):
-
     user_prompt_cropped=user_prompt[:300]
 
     expected_examples = f"""
@@ -163,9 +164,8 @@ def return_request_info(user_prompt):
     If you don't see any brand in the prompt try to find it \
     It the model doesn't exists set the "model_exists" key to False (using the same case) but set the right value to brand. \
     You will also identify the language of the request as the key "request_language". \
-    Also determine the type of object and put your result in the key "type_of_object". For example it could be smartphone, camera, car, etc.. \ 
-    If the value doesn't concern any information about a product set the value of out_of_scope to True.
-
+    Also determine the type of object and put your result in the key "type_of_object". For example it could be smartphone, camera, car, etc.. \
+    If the value doesn't concern any information about a product set the value of out_of_scope to True. \
     I want your output formated as a json string with the following format: \
     {{
         out_of_scope = [Boolean],
@@ -186,8 +186,8 @@ def return_request_info(user_prompt):
     The user demand is delimited into tripple backtick
     ```{user_prompt_cropped}```
     """
-
-    return get_completion(chat_instruction_if_no_brand_no_model)
+    response = get_completion(chat_instruction_if_no_brand_no_model) 
+    return response
 
 def find_model_path(selected_brand, model, debug):
     try:
@@ -199,21 +199,25 @@ def find_model_path(selected_brand, model, debug):
         ## Checking outputs
         if not selected_brand in os.listdir(doc_base_path): return []
         model_split = model.split("_")
+        print(model_split)
         if ((len(model_split) != 2) | (model_split[0].strip() == "") | (model_split[1].strip() == "")): return []
-
         for current_file_path in os.listdir(os.path.join(doc_base_path, selected_brand.lower())):
             if (
-                (str(model_split[0]) in str(current_file_path.lower())) |
+                (str(model_split[0]) in str(current_file_path.lower())) &
                 (str(model_split[1]) in str(current_file_path.lower())) & 
                 (".pdf" == str(os.path.splitext(current_file_path)[1]).lower())
             ):
-                if (current_file_path.lower().index(model_split[0]) < current_file_path.lower().index(model_split[1])):
+                if (str(current_file_path).lower().index(model_split[0]) < str(current_file_path).lower().index(model_split[1])):
                     selected_doc_path.append(os.path.join(doc_base_path, selected_brand, current_file_path))
         return selected_doc_path
 
     except Exception as error:
         if debug: 
-            print("An exception occurred:", type(error).__name__)
+            stack_trace = traceback.extract_tb(error.__traceback__)
+            last_frame = stack_trace[-1]
+            function_name = last_frame.name
+            print(f"An exception occurred: in function ({function_name})", type(error).__name__)
+            print(model)
         return []
 
 def has_embeddings(pdf_file, brand):
@@ -270,6 +274,7 @@ def main():
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 try: 
+                    #To fix : we can look in the embeddings folder before looking in the pdf folder.
                     dict_answer = json.loads(return_request_info(prompt))
                     if ENABLE_DEBUG:
                         logging.debug("dict_answer :", dict_answer)
@@ -291,7 +296,8 @@ def main():
                             
                             response = handle_query(vector_store, prompt)
                 except Exception as error:
-                    logging.debug("An exception occurred :", type(error).__name__)
+                    print("An exception occurred :", type(error).__name__)
+                    # logging.debug("An exception occurred :", type(error).__name__)
                     response = "There is a problem on our side, please retry your question"    
 
                 assistant_response = response
